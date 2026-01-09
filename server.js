@@ -7,7 +7,7 @@ const webhookHandler = require('./events/webhook-handler');
 const config = require('./config');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 
 // Middleware
 app.use(bodyParser.json({
