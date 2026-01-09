@@ -1,7 +1,7 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType } = require('discord.js');
 const checkoutService = require('./checkout-service');
 const productService = require('./product-service');
-const config = require('../config.json');
+const config = require('../config');
 const logger = require('../utils/logger');
 
 class CartService {

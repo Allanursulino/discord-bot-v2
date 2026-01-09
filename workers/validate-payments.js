@@ -1,6 +1,6 @@
 const { ComponentType, ButtonStyle, EmbedBuilder, ActionRowBuilder, ButtonBuilder } = require("discord.js");
 const { db, checkoutService, formatPrice } = require("../@shared");
-const config = require("../config.json");
+const config = require("../config");
 const logger = require("../utils/logger");
 
 module.exports = {

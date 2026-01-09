@@ -14,7 +14,7 @@ const {
 const productService = require("../services/product-service");
 const { formatPrice } = require("../@shared");
 const logger = require("../utils/logger");
-const config = require("../config.json");
+const config = require("../config");
 
 module.exports = {
     options: {

@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { Client, GatewayIntentBits, ActivityType, Events, SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } = require("discord.js");
-const config = require("./config.json");
+const config = require("./config");
 const fg = require("fast-glob");
 const logger = require("./utils/logger");
 

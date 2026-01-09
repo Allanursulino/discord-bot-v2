@@ -1,7 +1,7 @@
 const checkoutService = require('../services/checkout-service');
 const CartService = require('../services/cart-service');
 const logger = require('../utils/logger');
-const config = require('../config.json');
+const config = require('../config');
 
 module.exports = {
     execute: (client) => {

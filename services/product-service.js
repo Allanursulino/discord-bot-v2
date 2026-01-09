@@ -1,6 +1,6 @@
 const db = require("../database");
 const { v4: uuidv4 } = require('uuid');
-const config = require('../config.json');
+const config = require('../config');
 
 class ProductService {
     // Salvar produto com região

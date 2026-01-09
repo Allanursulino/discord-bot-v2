@@ -8,7 +8,7 @@ const {
     ButtonStyle
 } = require("discord.js");
 const productService = require("../services/product-service");
-const config = require("../config.json");
+const config = require("../config");
 
 module.exports = {
     options: {

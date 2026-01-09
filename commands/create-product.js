@@ -12,7 +12,7 @@ const {
 } = require("discord.js");
 const productService = require("../services/product-service");
 const CatalogService = require("../services/catalog-service");
-const config = require("../config.json");
+const config = require("../config");
 const logger = require("../utils/logger");
 
 module.exports = {

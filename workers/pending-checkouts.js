@@ -1,5 +1,5 @@
 const { db } = require("../@shared");
-const config = require("../config.json");
+const config = require("../config");
 const { differenceInMinutes } = require("date-fns");
 
 module.exports = {

@@ -1,7 +1,7 @@
 const axios = require('axios');
 const qrcode = require('qrcode');
 const Stripe = require('stripe');
-const config = require('../config.json');
+const config = require('../config');
 const logger = require('../utils/logger');
 
 class PaymentService {

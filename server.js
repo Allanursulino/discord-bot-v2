@@ -4,7 +4,7 @@ const paymentService = require('./services/payment-service');
 const checkoutService = require('./services/checkout-service');
 const logger = require('./utils/logger');
 const webhookHandler = require('./events/webhook-handler');
-const config = require('./config.json');
+const config = require('./config');
 
 const app = express();
 const PORT = process.env.PORT || 3000;

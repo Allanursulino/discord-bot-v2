@@ -1,5 +1,5 @@
 const { WebhookClient } = require('discord.js');
-const config = require('../config.json');
+const config = require('../config');
 const logger = require('../utils/logger');
 const checkoutService = require('../services/checkout-service');
 const paymentService = require('../services/payment-service');

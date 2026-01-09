@@ -1,6 +1,6 @@
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
 const productService = require('./product-service');
-const config = require('../config.json');
+const config = require('../config');
 
 class CatalogService {
     constructor(client) {
