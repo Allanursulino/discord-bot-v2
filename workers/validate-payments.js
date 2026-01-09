@@ -1,12 +1,9 @@
 const {
-    ComponentType,
-    ButtonStyle,
-    EmbedBuilder,
-    ActionRowBuilder,
-    ButtonBuilder
+    EmbedBuilder
 } = require("discord.js");
 
-const { db, checkoutService, formatPrice } = require("../@shared");
+const { db, formatPrice } = require("../@shared");
+const checkoutService = require("../services/checkoutService");
 const config = require("../config");
 const logger = require("../utils/logger");
 
@@ -18,6 +15,12 @@ module.exports = {
 
             setInterval(async () => {
                 try {
+                    // 🔥 LIMPA CHECKOUTS EXPIRADOS (AGORA FUNCIONA)
+                    const expired = checkoutService.checkExpiredCheckouts();
+                    if (expired > 0) {
+                        logger.info(`🕒 ${expired} checkouts expirados automaticamente.`);
+                    }
+
                     const all = db.all();
                     const checkouts = all.filter(entry =>
                         entry.ID.startsWith("checkout:") &&
@@ -31,7 +34,6 @@ module.exports = {
 
                         try {
                             const updatedCheckout = await checkoutService.checkPaymentStatus(checkoutData.id);
-
                             if (!updatedCheckout || updatedCheckout.status !== "APPROVED") continue;
 
                             const channelId = checkout.ID.split(":")[1];
