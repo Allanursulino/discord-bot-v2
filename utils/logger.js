@@ -1,112 +1,120 @@
-const axios = require('axios');
-const config = require('../config');
+const axios = require("axios");
+const config = require("../config");
 
 class Logger {
     constructor() {
-        this.webhookUrl = config.discord.webhook_url;
-        this.logChannel = config.discord.log_channel;
-        this.adminId = config.discord.admin_id;
-        this.emojis = config.emojis;
+        // Prioridade: ENV (Render) → config.js
+        this.webhookUrl =
+            process.env.DISCORD_LOG_WEBHOOK ||
+            config?.discord?.webhook_url ||
+            null;
+
+        this.logChannel = config?.discord?.log_channel || null;
+        this.adminId = process.env.DISCORD_ADMIN_ID || config?.discord?.admin_id || null;
+        this.emojis = config?.emojis || {};
     }
 
-    // Log no console E no webhook do Discord
+    isValidWebhook(url) {
+        return typeof url === "string" && url.startsWith("https://discord.com/api/webhooks/");
+    }
+
     async log(type, message, data = null) {
-        const timestamp = new Date().toLocaleString('pt-BR');
+        const timestamp = new Date().toLocaleString("pt-BR");
         const consoleMessage = `[${timestamp}] ${type}: ${message}`;
-        
+
         console.log(consoleMessage);
         if (data) console.log(data);
 
-        // Enviar para webhook do Discord
+        // 🚫 Sem webhook → apenas console
+        if (!this.isValidWebhook(this.webhookUrl)) {
+            return;
+        }
+
         try {
-            let color;
-            let emoji;
-            
-            switch(type) {
-                case 'VENDA':
-                    color = 0x00FF00; // Verde
-                    emoji = '💰';
+            let color = 0x808080;
+            let emoji = "📝";
+
+            switch (type) {
+                case "VENDA":
+                    color = 0x00ff00;
+                    emoji = "💰";
                     break;
-                case 'ERRO':
-                    color = 0xFF0000; // Vermelho
-                    emoji = '❌';
+                case "ERRO":
+                    color = 0xff0000;
+                    emoji = "❌";
                     break;
-                case 'INFO':
-                    color = 0x0099FF; // Azul
-                    emoji = 'ℹ️';
+                case "INFO":
+                    color = 0x0099ff;
+                    emoji = "ℹ️";
                     break;
-                case 'PAGAMENTO':
-                    color = 0xFFD700; // Dourado
-                    emoji = '💳';
+                case "PAGAMENTO":
+                    color = 0xffd700;
+                    emoji = "💳";
                     break;
-                default:
-                    color = 0x808080; // Cinza
-                    emoji = '📝';
             }
 
             const embed = {
                 title: `${emoji} ${type}`,
                 description: message,
-                color: color,
+                color,
                 fields: [],
                 timestamp: new Date().toISOString(),
                 footer: {
-                    text: 'Bot de Vendas'
+                    text: "MultiHub • Bot de Vendas"
                 }
             };
 
-            if (data && typeof data === 'object') {
-                Object.entries(data).forEach(([key, value]) => {
-                    if (value) {
+            if (data && typeof data === "object") {
+                for (const [key, value] of Object.entries(data)) {
+                    if (value !== undefined && value !== null) {
                         embed.fields.push({
                             name: key,
                             value: String(value).slice(0, 1024),
                             inline: true
                         });
                     }
-                });
+                }
             }
 
             await axios.post(this.webhookUrl, {
                 embeds: [embed],
-                content: type === 'ERRO' ? `<@${this.adminId}>` : undefined
+                content: type === "ERRO" && this.adminId ? `<@${this.adminId}>` : undefined
             });
+
         } catch (error) {
-            console.error('Erro ao enviar log para webhook:', error.message);
+            console.error("Erro ao enviar log para webhook:", error.message);
         }
     }
 
-    // Métodos específicos
     async venda(user, product, valor, metodo) {
-        await this.log('VENDA', `Nova venda realizada!`, {
-            '👤 Usuário': user,
-            '📦 Produto': product,
-            '💰 Valor': `R$ ${valor.toFixed(2)}`,
-            '💳 Método': metodo,
-            '🕒 Data': new Date().toLocaleString('pt-BR')
+        return this.log("VENDA", "Nova venda realizada!", {
+            "👤 Usuário": user,
+            "📦 Produto": product,
+            "💰 Valor": valor,
+            "💳 Método": metodo,
+            "🕒 Data": new Date().toLocaleString("pt-BR")
         });
     }
 
     async pagamento(checkoutId, status, provider) {
-        await this.log('PAGAMENTO', `Pagamento ${status}`, {
-            '📋 Checkout ID': checkoutId,
-            '🏦 Gateway': provider,
-            '📊 Status': status,
-            '🕒 Hora': new Date().toLocaleTimeString('pt-BR')
+        return this.log("PAGAMENTO", `Pagamento ${status}`, {
+            "📋 Checkout ID": checkoutId,
+            "🏦 Gateway": provider,
+            "📊 Status": status
         });
     }
 
     async erro(contexto, error, userId = null) {
-        await this.log('ERRO', `Erro em ${contexto}`, {
-            '🔧 Contexto': contexto,
-            '❌ Erro': error.message || String(error),
-            '👤 Usuário': userId || 'Não especificado',
-            '📁 Stack': error.stack ? error.stack.split('\n')[0] : 'Não disponível'
+        return this.log("ERRO", `Erro em ${contexto}`, {
+            "🔧 Contexto": contexto,
+            "❌ Erro": error?.message || String(error),
+            "👤 Usuário": userId || "Não especificado",
+            "📁 Stack": error?.stack ? error.stack.split("\n")[0] : "N/A"
         });
     }
 
     async info(mensagem, data = null) {
-        await this.log('INFO', mensagem, data);
+        return this.log("INFO", mensagem, data);
     }
 }
 
